@@ -6,47 +6,59 @@ html
 
   body
 
-    div.row
+    div.row(style='background-color: #fafafa;')
       div.three.columns &nbsp;
-      div.six.columns
+      div.eight.columns
 
-        h3 Create node
+        h3(style='font-family: "Montserrat", sans-serif;') Create your own dish recommendation list
 
-        form(action="/", method="post")
+        form(action="/dish", method="post")
 
-          label(for="nameInput") Node name
+          label(for="nameInput") Type dish name and select its origin
           div.row
             div.six.columns
-              input.u-full-width(name="name", type="text", placeholder="Node name", autofocus)
+              input.u-full-width(name="name", type="text", placeholder="Dish name", autofocus)
             div.six.columns
-              input.button-primary.u-full-width(type="submit", value="Create Node")
+              select.u-full-width(name="originSelect" id="origin")
+                option="italian"
+                option="polish"
+                option="english"
+                option="american"
+                option="japanese"
+                option="french"
+          div.row
+            div.six.columns
+              label(for="nameInput") Do you recommend?
+                input(type="checkbox" name="recommended")
+            div.six.columns
+              input.button-primary.u-full-width(type="submit", value="Create dish" style='background-color: #ff6666; border-color: white')
 
 
-
-
-        h3 List of nodes
+        h3(style='font-family: "Montserrat", sans-serif;') Recommendation list
 
         if nodes.length == 0
-          p You haven't created any nodes yet.
+          p You haven't created any list position yet.
 
         if nodes.length > 0
           table.u-full-width
             thead
               tr
-                th Name
-                th UUID
+                th(style='color: #ff4d4d;') Dish
+                th(style='color: #ff4d4d;') Origin
+                th(style='color: #ff4d4d;') Recommended
             tbody
               each node in nodes
                 tr
                   td= node.name
-                  td= node.uuid
+                  td= node.originSelect
+                  td= node.recommended
 
 
 
-        h3 Clear nodes
+        h3(style='font-family: "Montserrat", sans-serif;') Clear whole list
 
         form(action="/clear", method="post")
 
           div.row
             div.twelve.columns
-              input.button-primary.u-full-width(type="submit", value="Clear all nodes")
+              input.button-primary.u-full-width(type="submit", value="Clear all nodes" style='background-color: #ff6666; border-color: white')

@@ -15,15 +15,26 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
   db.getNodes()
-    .then((nodes) => {
+    .then(({ dishNodes, restaurantNodes }) => {
+      const nodes = dishNodes.map((dishNode, index) => ({ ...dishNode, originSelect: restaurantNodes[index].originSelect }));
+
       res.render('./home.pug', { nodes });
     })
     .catch(error => res.status(500).send(error));
 });
 
-app.post('/', (req, res) => {
+app.post('/dish', (req, res) => {
   const name = req.body.name;
-  db.createNode(name)
+  const originSelect = req.body.originSelect;
+  const recommended = req.body.recommended;
+  db.createDish(name, originSelect, recommended)
+    .then(() => res.redirect('/'))
+    .catch(error => res.status(500).send(error));
+});
+
+app.post('/restaurant', (req, res) => {
+  const restaurant = req.body.restaurant;
+  db.createRestaurant(restaurant)
     .then(() => res.redirect('/'))
     .catch(error => res.status(500).send(error));
 });

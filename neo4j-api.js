@@ -12,17 +12,43 @@ class Neo4jApi {
     this.driver = neo4j.driver(url, neo4j.auth.basic(user, pass));
   }
 
-  createNode(name) {
+  createDish(name, originSelect, recommended) {
     const session = this.driver.session();
+    let recommendedBoolean = false;
+
+    if (recommended === 'on') {
+      recommendedBoolean = true;
+    }
     const resp = session
       .run(`
-          CREATE (n:EXPRESS_SAMPLE_NAME {
+          CREATE (d:DISHES {
             name: {name},
-            uuid: {uuid}
+            recommended: {recommendedBoolean}
+          })-[rel:COMES_FROM]->(o:Origin{
+            originSelect:{originSelect}
           })
-          RETURN n.name`, {
+          RETURN d.name, o.originSelect, d.recommended`, {
             name,
-            uuid: uuid(),
+            originSelect,
+            recommendedBoolean,
+          });
+
+    resp.then(() => session.close())
+      .catch(() => session.close());
+
+    return resp;
+  }
+
+  createRestaurant(restaurant) {
+    const session = this.driver.session();
+
+    const resp = session
+      .run(`
+          CREATE (r:DISHES {
+            restaurant: {restaurant}
+          })
+          RETURN r.restaurant`, {
+            restaurant,
           });
 
     resp.then(() => session.close())
@@ -37,12 +63,16 @@ class Neo4jApi {
     const promise = new Promise((resolve, reject) => {
       session
         .run(`
-            MATCH (n:EXPRESS_SAMPLE_NAME)
-            RETURN n`)
+            MATCH (d:DISHES)-[rel:COMES_FROM]->(o:Origin)
+            RETURN d, o`)
         .then((result) => {
           session.close();
-          resolve(result.records
-            .map(record => record._fields[0].properties));
+          resolve({
+            dishNodes: result.records
+            .map(record => record._fields[0].properties),
+            restaurantNodes: result.records
+            .map(record => record._fields[1].properties),
+          });
         })
         .catch((error) => {
           session.close();
@@ -56,8 +86,8 @@ class Neo4jApi {
   clearNodes() {
     const session = this.driver.session();
     return session.run(`
-        MATCH (n:EXPRESS_SAMPLE_NAME)
-        DELETE n`);
+        MATCH (d:DISHES)-[rel:COMES_FROM]->(o:Origin)
+        DELETE d, rel, o`);
   }
 
   close() {
