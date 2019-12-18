@@ -1,14 +1,13 @@
 {
-  "name": "neo4j-express-heroku-sample",
+  "name": "food-recommendation-pilat",
   "version": "1.0.0",
-  "description": "Sample project to deploy Neo4j+Express on Heroku",
+  "description": "Food recommender using Neo4j database",
   "scripts": {
     "start": "node ./app",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Marius Treitz <marius.treitz@gmail.com>",
+  "author": "Magdalena Pilay",
   "license": "MIT",
-  "repository": "git@github.com:visby/neo4j-express-heroku-sample.git",
   "dependencies": {
     "body-parser": "^1.15.2",
     "dotenv": "^2.0.0",
